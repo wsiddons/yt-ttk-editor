@@ -1,0 +1,27 @@
+* {
+    margin: 0;
+}
+
+.page-container {
+    display: flex;
+    justify-content: center;
+}
+
+.cropper-container {
+    display: flex;
+    position: relative;
+    max-width: 720px;
+    margin: 10% 0;
+}
+
+.cropper-container video {
+    width: 100%;
+}
+
+.cropper-cam {
+    position: absolute;
+}
+
+.cropper-video {
+    position: absolute;
+}
