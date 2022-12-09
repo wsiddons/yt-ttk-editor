@@ -26,3 +26,30 @@
 .cropper-video {
     position: absolute;
 }
+
+.drag-drop-container {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background-color: red;
+
+}
+
+.drag-drop-container div {
+    height: 25%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: blue;
+}
+
+.drag-drop-container input {
+    /* height: 100%;
+    width: 100%;
+    text-align: center; */
+}
