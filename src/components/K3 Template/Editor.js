@@ -1,6 +1,10 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { UseCtx } from '../../contexts/Context'
+import MultiRangeSlider from './MultiRangeSlider/MultiRangeSlider'
+import VideoTrim from './VideoTrim/VideoTrim'
+import PreviewContainer from './PreviewContainer'
 
 function Test() {
     const inputVideo = useRef(null)
@@ -10,9 +14,24 @@ function Test() {
     const cropVideoRightHandle = useRef(null)
     const timeInput = useRef(null)
     const span = useRef(null)
+    const dlBtn = useRef(null)
+    const dlLink = useRef(null)
+
+    const {currentVideo, setCurrentVideo} = UseCtx()
+    const [staticVid, setStaticVid] = useState(null)
+
+    const navigate = useNavigate()
 
 
     useEffect(() => {
+        if(currentVideo === null) {
+            console.log('first')
+            navigate('/')
+            return
+        }
+
+        setStaticVid(URL.createObjectURL(currentVideo))
+
         setVideoBoundingTop(inputVideo.current.getBoundingClientRect().top)
         setVideoBoundingLeft(inputVideo.current.getBoundingClientRect().left)
 
@@ -58,7 +77,16 @@ function Test() {
     const [upload, setUpload] = useState(false)
     const [seconds, setSeconds] = useState(0)
     const [fileName, setFileName] = useState('')
-    
+
+    //set preveiw
+    const [preview, setPreview] = useState(false)
+
+    //loading clip
+    const [loading, setLoading] = useState(false)
+
+    //progress text
+    const [progressText, setProgressText] = useState('')
+    const [progressRatio, setProgressRatio] = useState(0)
 
     const mouseDown = (e) => {
         if (e.target.className === 'cropper-video' || e.target.className === 'cropper-cam') {
@@ -75,6 +103,7 @@ function Test() {
     }
 
     const mouseMove = (e) => {
+        e.preventDefault()
         let mouseX = e.clientX - videoBoundingLeft
         let mouseY = e.clientY- videoBoundingTop
 
@@ -122,18 +151,21 @@ function Test() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setLoading(false)
         const ffmpeg = createFFmpeg({
-            log: true,
+            // log: true,
+            // progress: p => console.log(p)
         })
 
-        const multi = inputVideo.current.videoWidth / inputVideo.current.offsetWidth
+        // const dlA = document.getElementById('dl-a')
 
+
+        const multi = inputVideo.current.videoWidth / inputVideo.current.offsetWidth
         await ffmpeg.load();
 
-        const file1 = e.target[0].files[0]
-        const file2 = e.target[1].files[0]
+        // const file1 = e.target[0].files[0]
+        const file1 = currentVideo
         const name1 = file1.name
-        const name2 = file2.name
 
         const w = cropperCam.current.offsetWidth * multi
         const h = cropperCam.current.offsetHeight * multi
@@ -153,35 +185,72 @@ function Test() {
 
         console.log(cropCam)
         ffmpeg.FS('writeFile', name1, await fetchFile(file1))
-        ffmpeg.FS('writeFile', name2, await fetchFile(file2))
 
         const time1 = new Date(clipStart * 1000).toISOString().substr(11, 8)
         const time2 = new Date(clipEnd * 1000).toISOString().substr(11, 8)
 
-        console.log(time1)
-        console.log(time2)
+        ffmpeg.setProgress(({ ratio }) => {
+            setProgressRatio(ratio)
+            /*
+             * ratio is a float number between 0 to 1.
+             */
+          })
 
         // set clip time
         await ffmpeg.run('-ss', time1,'-to', time2, '-i', name1,  '-avoid_negative_ts', 'make_zero', '-c', 'copy', 'trim.mp4')
+        setProgressText(`trimming video ${parseInt(progressRatio) * 100}%`)
+
         //crop clip 1 -c:v libx264 -c:a aac
         await ffmpeg.run('-i', 'trim.mp4', '-filter:v', cropCam, '-c:v', 'libx264', '-preset', 'superfast', 'crop1.mp4')
+        setProgressText(`cropping cam ${parseInt(progressRatio) * 100}%`)
+
         //crop clip 2
         await ffmpeg.run('-i', 'trim.mp4', '-filter:v', cropVideo, '-c:v', 'libx264', '-preset', 'superfast', 'crop2.mp4')
+        setProgressText(`cropping gameplay ${parseInt(progressRatio) * 100}%`)
 
         //stack the cropped clips
         await ffmpeg.run('-i', 'crop1.mp4', '-i', 'crop2.mp4', '-filter_complex', 'vstack=inputs=2', '-c:v', 'libx264', '-preset', 'superfast', 'output.mp4')
+        setProgressText(`stacking clips ${parseInt(progressRatio) * 100}%`)
 
-        await ffmpeg.run('-i', 'output.mp4', '-i', name2, '-filter_complex', overlay, '-c:v', 'libx264', '-preset', 'superfast', 'output_overlay.mp4')
+
+        if (e.target[2].files[0]) {
+            const file2 = e.target[2].files[0]
+            const name2 = file2.name
+            ffmpeg.FS('writeFile', name2, await fetchFile(file2))
+            await ffmpeg.run('-i', 'output.mp4', '-i', name2, '-filter_complex', overlay, '-c:v', 'libx264', '-preset', 'superfast', 'output_overlay.mp4')
+            setProgressText(`overlaying image ${parseInt(progressRatio) * 100}%`)
+
+            var data = ffmpeg.FS('readFile', `output_overlay.mp4`)
+        } else {
+            var data = ffmpeg.FS('readFile', `output.mp4`)
+        }
+        
+        setProgressText('')
 
         //ffmpeg -i input.mp4 -filter:v "crop=100:100:10:20,scale=200:200" output.mp4
+        setLoading(true)
+
+
+        const previewContainer = document.getElementById('preview-container')
+
+        const loadingEle = document.getElementById('loading')
+        loadingEle.remove()
+
+        const video = document.createElement('video')   
+        video.controls = true
+        video.autoplay = true
+        video.src = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
+        video.style.maxWidth = '228px'
+        video.style.aspectRatio = (1080 / 1920)
+        console.dir(previewContainer)
+        // previewContainer.appendChild(video)
+        previewContainer.insertBefore(video, previewContainer.children[1])
 
         //read the output
-        const data = ffmpeg.FS('readFile', `output_overlay.mp4`);
-        const a = document.createElement('a')
-        a.download = fileName
-        a.href = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
-        a.innerHTML = `download`
-        document.body.appendChild(a)
+        dlLink.current.href = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
+        dlLink.current.download = fileName
+        dlLink.current.innerHTML = fileName + '.mp4'
+   
     }
 
     const handleUploadVideo = (e) => {
@@ -202,34 +271,11 @@ function Test() {
     }
 
     return (
+        <>
+        {currentVideo === null? navigate('/') : 
+        <>
         <div className='page-container'>
-            <form onSubmit={handleSubmit}>
-                <p>input video</p>
-                <input onChange={handleUploadVideo} type='file' />
-                <p>input image</p>
-                <input onChange={handleUploadImage} type='file' />
-                <p>set file name</p>
-                <input onChange={(e) => setFileName(e.target.value)} type='test' />
-
-                {/* {upload ? 
-                        <>
-                    <span ref={span}>clipend {seconds}</span>
-                    <input
-                        ref={timeInput} 
-                        type="range" min="1" max={clipEnd} defaultValue={clipEnd / 4} />
-                        </>
-                        :
-                    <input type="range" min="1" max='100' defaultValue="50" />
-                } */}
-                
-                
-                    <p>clip start (sec)</p>
-                    <input onChange={(e) => setClipStart(e.target.value)} type='number' />
-                    <p>clip end (sec)</p>
-                    <input onChange={(e) => setClipEnd(e.target.value)} type='number' /> 
-                <button>Make Clip</button>
-                
-            </form>
+            <div className='content-container'>
             <div className='cropper-container'
             onMouseDown={mouseDown}
             onMouseMove={mouseMove}
@@ -244,7 +290,7 @@ function Test() {
                     width='720px' 
                     ref={inputVideo} 
                     id='video' 
-                    src={require('../../assets/k3.mp4')} 
+                    src={staticVid}
                 />
                 
                 <div 
@@ -299,13 +345,49 @@ function Test() {
                         ></div>
                 </div>
             </div>
-
-            <nav>
-                <Link to='/singleAction'>
-                    <button>Single Action</button>
-                </Link>
-            </nav>
+            <div className='form-container'>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <div>
+                        <p>Clip Start (sec)</p>
+                        <input onChange={(e) => setClipStart(e.target.value)} type='number' />
+                    </div>
+                    <div>
+                        <p>Clip End (sec)</p>
+                        <input onChange={(e) => setClipEnd(e.target.value)} type='number' /> 
+                    </div>
+                </div>
+                <p>Add Overlay image (optional)</p>
+                <input onChange={handleUploadImage} type='file' />
+                <p>set file name</p>
+                <input onChange={(e) => setFileName(e.target.value)} type='test' />
+                <button onClick={() => setPreview(!preview)}>Make Clip</button>
+            </form>
+            </div>
+            </div>
+            
         </div>
+        {preview ? 
+        <>
+            <div className='preview-container' id='preview-container'>
+                <p onClick={() => setPreview(!preview)} id='close-preview'>x</p>
+                <img id='loading' src={require('../../assets/Loading_icon.png')} />
+                <p>{progressText}</p>
+                <button ref={dlBtn} id='dl-button'>
+                    <a 
+                        href='#' 
+                        ref={dlLink}
+                        download={true}
+                        style={{textDecoration: 'none'}}
+                    >Loading...</a>
+                </button>
+            </div>
+        </>
+        : <></>}
+        </>
+    
+        }
+    </>
     ) 
 }
 

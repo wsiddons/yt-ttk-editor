@@ -1,22 +1,43 @@
 * {
     margin: 0;
+    font-family: 'Roboto Condensed', sans-serif;
 }
 
 .page-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #fe7eeb;
+}
+
+.content-container {
+    padding: 2%;
+    background: rgba( 255, 255, 255, 0.4 );
+    /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    transition: ease-in-out 0.5s;
+
 }
 
 .cropper-container {
     display: flex;
     position: relative;
+    flex-direction: column;
     max-width: 720px;
-    margin: 10% 0;
+    justify-content: center;
+    align-items: center;
+    /* height: 405px; */
+
 }
 
 .cropper-container video {
     width: 100%;
+    height: 100%;
 }
 
 .cropper-cam {
@@ -34,8 +55,15 @@
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    background-color: red;
+    background-color: #fe7eeb;
 
+}
+
+.drag-drop-container h1 {
+    position: absolute;
+    top: 25%;
+    font-size: 8em;
+    color: white;
 }
 
 .drag-drop-container div {
@@ -45,11 +73,153 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: blue;
+    background: rgba( 255, 255, 255, 0.4 );
+    /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    transition: ease-in-out 0.5s;
+
+}
+
+.drag-drop-container div:hover {
+    width: 53%;
+    height: 26%;
+    transition: ease-in-out 0.5s;
 }
 
 .drag-drop-container input {
     /* height: 100%;
     width: 100%;
     text-align: center; */
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    margin: 2%;
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container form>div {
+    display: flex;
+}
+
+.form-container input {
+    background: rgba( 255, 255, 255, 0.4 );
+    /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: none;
+    height: 2.5em;
+    margin: 5px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+}
+
+.form-container button {
+    background: rgba( 255, 255, 255, 0.4 );
+    /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: none;
+    height: 2.5em;
+    margin: 5px;
+    text-align: center;
+}
+
+
+.video-trim-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.trim-control-left {
+    height: 3vh;
+    background-color: yellow;
+    border: 2px solid yellow;
+    width: 2%;
+}
+
+.trim-control-right {
+    height: 3vh;
+    background-color: yellow;
+    border: 2px solid yellow;
+    width: 2%;
+}
+
+.trim-control-middle {
+    height: 3vh;
+    border: 2px solid yellow;
+    width: 96%;
+    background-color: grey;
+}
+
+.preview-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba( 255, 255, 255, 0.4 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: none;
+    width: 228px;
+    padding: 50px;
+    z-index: 3;
+    top: 5vw;
+    left: calc(50vw - 164px);
+}
+
+#close-preview {
+    position: absolute;
+    top: 0.5vw;
+    left: 1vw;
+}
+
+#close-preview:hover {
+    cursor: pointer;
+}
+
+/* .preview-container div {
+    display: flex;
+    flex-direction: column;
+    background: rgba( 255, 255, 255, 0.4 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: none;
+    width: 300px;
+    padding: 50px;
+} */
+
+#dl-button {
+    margin-top: 20px;
+}
+
+#loading {
+    max-width: 50px;
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
