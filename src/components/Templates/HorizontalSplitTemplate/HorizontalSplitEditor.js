@@ -1,12 +1,9 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
 import { Link, useNavigate } from 'react-router-dom'
-import { UseCtx } from '../../contexts/Context'
-import MultiRangeSlider from './MultiRangeSlider/MultiRangeSlider'
-import VideoTrim from './VideoTrim/VideoTrim'
-import PreviewContainer from './PreviewContainer'
+import { UseCtx } from '../../../contexts/Context'
 
-function Test() {
+function HorizontalSplitEditor() {
     const inputVideo = useRef(null)
     const cropperCam = useRef(null)
     const cropperVideo = useRef(null)
@@ -69,7 +66,7 @@ function Test() {
     //resize videoCropBox + camCropBox
     const [isVideoCropBoxMouseDown, setIsVideoCropBoxMouseDown] = useState(false)
     const [cropVideoWidth, setCropVideoWidth] = useState(320)
-    const [cropCamWidth, setCropCamWidth] = useState(150)
+    const [cropCamWidth, setCropCamWidth] = useState(320)
 
     // form stuff
     const [clipStart, setClipStart] = useState(0)
@@ -87,6 +84,7 @@ function Test() {
     //progress text
     const [progressText, setProgressText] = useState('')
     const [progressRatio, setProgressRatio] = useState(0)
+    const [testRatio, setTestRatio] = useState(0)
 
     const mouseDown = (e) => {
         if (e.target.className === 'cropper-video' || e.target.className === 'cropper-cam') {
@@ -147,23 +145,14 @@ function Test() {
         setIsMouseDown(false)
     }
 
-   
-
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(false)
-        const ffmpeg = createFFmpeg({
-            // log: true,
-            // progress: p => console.log(p)
-        })
-
-        // const dlA = document.getElementById('dl-a')
-
+        const ffmpeg = createFFmpeg({})
 
         const multi = inputVideo.current.videoWidth / inputVideo.current.offsetWidth
         await ffmpeg.load();
 
-        // const file1 = e.target[0].files[0]
         const file1 = currentVideo
         const name1 = file1.name
 
@@ -177,11 +166,10 @@ function Test() {
         const x2 = cropperVideo.current.offsetLeft * multi
         const y2 = cropperVideo.current.offsetTop * multi
 
-        const cropCam = `crop=${w}:${h}:${x}:${y},scale=720:426`
-        const cropVideo = `crop=${w2}:${h2}:${x2}:${y2},scale=720:854`
-        // const cropVideo = `crop=${w2}:${h2}:${x2}:${y2}`
+        const cropCam = `crop=${w}:${h}:${x}:${y},scale=720:640`
+        const cropVideo = `crop=${w2}:${h2}:${x2}:${y2},scale=720:640`
 
-        const overlay = `overlay=0:350`
+        const overlay = `overlay=0:590`
 
         console.log(cropCam)
         ffmpeg.FS('writeFile', name1, await fetchFile(file1))
@@ -189,28 +177,25 @@ function Test() {
         const time1 = new Date(clipStart * 1000).toISOString().substr(11, 8)
         const time2 = new Date(clipEnd * 1000).toISOString().substr(11, 8)
 
-        ffmpeg.setProgress(({ ratio }) => {
-            setProgressRatio(ratio)
-            /*
-             * ratio is a float number between 0 to 1.
-             */
+        ffmpeg.setProgress((test) => {
+            setTestRatio(test.ratio * 100)
           })
 
         // set clip time
         await ffmpeg.run('-ss', time1,'-to', time2, '-i', name1,  '-avoid_negative_ts', 'make_zero', '-c', 'copy', 'trim.mp4')
-        setProgressText(`trimming video ${parseInt(progressRatio) * 100}%`)
+        setProgressText(`trimming video`)
 
         //crop clip 1 -c:v libx264 -c:a aac
         await ffmpeg.run('-i', 'trim.mp4', '-filter:v', cropCam, '-c:v', 'libx264', '-preset', 'superfast', 'crop1.mp4')
-        setProgressText(`cropping cam ${parseInt(progressRatio) * 100}%`)
+        setProgressText(`cropping cam`)
 
         //crop clip 2
         await ffmpeg.run('-i', 'trim.mp4', '-filter:v', cropVideo, '-c:v', 'libx264', '-preset', 'superfast', 'crop2.mp4')
-        setProgressText(`cropping gameplay ${parseInt(progressRatio) * 100}%`)
+        setProgressText(`cropping gameplay`)
 
         //stack the cropped clips
         await ffmpeg.run('-i', 'crop1.mp4', '-i', 'crop2.mp4', '-filter_complex', 'vstack=inputs=2', '-c:v', 'libx264', '-preset', 'superfast', 'output.mp4')
-        setProgressText(`stacking clips ${parseInt(progressRatio) * 100}%`)
+        setProgressText(`stacking clips`)
 
 
         if (e.target[2].files[0]) {
@@ -218,7 +203,7 @@ function Test() {
             const name2 = file2.name
             ffmpeg.FS('writeFile', name2, await fetchFile(file2))
             await ffmpeg.run('-i', 'output.mp4', '-i', name2, '-filter_complex', overlay, '-c:v', 'libx264', '-preset', 'superfast', 'output_overlay.mp4')
-            setProgressText(`overlaying image ${parseInt(progressRatio) * 100}%`)
+            setProgressText(`overlaying image`)
 
             var data = ffmpeg.FS('readFile', `output_overlay.mp4`)
         } else {
@@ -226,10 +211,8 @@ function Test() {
         }
         
         setProgressText('')
-
-        //ffmpeg -i input.mp4 -filter:v "crop=100:100:10:20,scale=200:200" output.mp4
+        setTestRatio('')
         setLoading(true)
-
 
         const previewContainer = document.getElementById('preview-container')
 
@@ -243,14 +226,16 @@ function Test() {
         video.style.maxWidth = '228px'
         video.style.aspectRatio = (1080 / 1920)
         console.dir(previewContainer)
-        // previewContainer.appendChild(video)
         previewContainer.insertBefore(video, previewContainer.children[1])
 
         //read the output
         dlLink.current.href = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
         dlLink.current.download = fileName
-        dlLink.current.innerHTML = fileName + '.mp4'
-   
+        dlLink.current.style.textDecoration = 'none'
+        dlLink.current.innerHTML = 'Download Clip'
+
+        const progressHTML = document.getElementById('progress')
+        progressHTML.remove()
     }
 
     const handleUploadVideo = (e) => {
@@ -280,9 +265,7 @@ function Test() {
             onMouseDown={mouseDown}
             onMouseMove={mouseMove}
             onMouseUp={mouseUp}
-            
             style={{overflow: 'hidden'}}
-
             >
                 <video 
                     controls={true}
@@ -300,7 +283,7 @@ function Test() {
                 style={{
                     border: '2px solid white',
                     width: cropVideoWidth + 'px',
-                    aspectRatio: (341/405),
+                    aspectRatio: (720 / 640),
                     left: cropVideoX + 'px',
                     top: cropVideoY + 'px',
                 }}
@@ -326,7 +309,7 @@ function Test() {
                 style={{
                     border: '2px solid red',
                     width: cropCamWidth + 'px',
-                    aspectRatio: (341/202),
+                    aspectRatio: (720 / 640),
                     left: cropCamX + 'px',
                     top: cropCamY + 'px'
                 }}
@@ -359,7 +342,7 @@ function Test() {
                 </div>
                 <p>Add Overlay image (optional)</p>
                 <input onChange={handleUploadImage} type='file' />
-                <p>set file name</p>
+                <p>Set File Name</p>
                 <input onChange={(e) => setFileName(e.target.value)} type='test' />
                 <button onClick={() => setPreview(!preview)}>Make Clip</button>
             </form>
@@ -371,8 +354,8 @@ function Test() {
         <>
             <div className='preview-container' id='preview-container'>
                 <p onClick={() => setPreview(!preview)} id='close-preview'>x</p>
-                <img id='loading' src={require('../../assets/Loading_icon.png')} />
-                <p>{progressText}</p>
+                <img id='loading' src={require('../../../assets/Loading_icon.png')} />
+                <p id='progress'>{progressText} {Math.floor(testRatio)}%</p>
                 <button ref={dlBtn} id='dl-button'>
                     <a 
                         href='#' 
@@ -385,10 +368,9 @@ function Test() {
         </>
         : <></>}
         </>
-    
         }
     </>
     ) 
 }
 
-export default Test
+export default HorizontalSplitEditor

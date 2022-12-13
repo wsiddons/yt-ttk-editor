@@ -1,6 +1,7 @@
 * {
     margin: 0;
     font-family: 'Roboto Condensed', sans-serif;
+    box-sizing: border-box;
 }
 
 .page-container {
@@ -10,7 +11,7 @@
     align-items: center;
     height: 100vh;
     overflow: hidden;
-    background-color: #fe7eeb;
+    background-color: #222940;
 }
 
 .content-container {
@@ -60,15 +61,24 @@
 }
 
 .drag-drop-container h1 {
+    text-align: center;
     position: absolute;
     top: 25%;
     font-size: 8em;
     color: white;
 }
 
+.drag-drop-container p {
+    color: #7D4433;
+    margin: 2% 20%;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
 .drag-drop-container div {
     height: 25%;
-    width: 50%;
+    width: 25%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -79,19 +89,29 @@
     -webkit-backdrop-filter: blur( 4px );
     border-radius: 10px;
     transition: ease-in-out 0.5s;
-
 }
 
 .drag-drop-container div:hover {
-    width: 53%;
-    height: 26%;
+    width: 80%;
+    height: 80%;
     transition: ease-in-out 0.5s;
 }
 
-.drag-drop-container input {
-    /* height: 100%;
-    width: 100%;
-    text-align: center; */
+.drag-drop-container button {
+    background: rgba( 255, 255, 255, 0.4 );
+    /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    height: 5vh;
+    color: #7D4433;
+    transition: ease-in-out 0.3s;
+}
+
+.drag-drop-container button:hover {
+    background-color: #fe7eeb;
+    transition: ease-in-out 0.3s;
+    color: white;
 }
 
 .form-container {
@@ -103,6 +123,8 @@
 .form-container form {
     display: flex;
     flex-direction: column;
+    color: #222940;
+    font-weight: 600;
 }
 
 .form-container form>div {
@@ -134,7 +156,10 @@
     border: none;
     height: 2.5em;
     margin: 5px;
+    color: #222940;
     text-align: center;
+    font-weight: 600;
+    font-size: 1.2em;
 }
 
 
@@ -222,4 +247,145 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* .menu-page-container {
+    background-color: #fe7eeb;
+}
+
+.menu-page-container h1 {
+    text-align: center;
+    color: #7D4433;
+    font-size: 3em;
+}
+
+.menu-container {
+    margin: 10%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(100px, auto);
+}
+
+
+
+.img-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 3%;
+    background: rgba( 255, 255, 255, 0.4 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    transition: ease-in-out 0.5s;
+}
+
+.img-container h3 {
+    
+}
+
+.template-title {
+    position: absolute;
+    background: rgba( 255, 255, 255, 0.4 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    padding: 20%;
+    color: #7D4433;
+    font-size: 2em;
+    text-decoration: none;
+}
+
+.img-container img {
+    max-width: 200px;
+    max-height: 70%;
+} */
+
+.menu-page-container {
+    background-color: #222940;
+    height: 100%;
+    min-height: 100vh;
+    padding: 10%;
+}
+
+.menu-page-container>h1 {
+    color: #F2EFDF;
+    font-size: 3em;
+    text-align: center;
+}
+
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(100px, auto);
+}
+
+.item-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5%;
+    border-radius: 10px;
+    padding: 2%;
+    border: 1px solid #F2EFDF;
+}
+
+.item-container button {
+    margin: 20px 20px;
+    background-color: #222940;
+    border: 1px solid #F2EFDF;
+    border-radius: 5px;
+    color: #F2EFDF;
+    transition: ease-in-out 0.3s;
+}
+
+.item-container button:hover {
+    font-size: 1.1em;
+    transition: ease-in-out 0.3s;
+    background-color: #F2EFDF;
+    color: #222940;
+    border: 1px solid #222940;
+}
+
+.item-container h3 {
+    margin-bottom: 10px;
+}
+
+.item-container p, h3 {
+    color: #F2EFDF;
+    margin: 0 20px;
+}
+
+.item-container li {
+    color: #F2EFDF;
+}
+
+.item-container img {
+    max-width: 200px;
+    max-height: 200px;
+    border-right: 1px solid #F2EFDF;
+    padding-right: 10px;
+}
+
+.item-container:hover {
+    background: rgba( 191, 174, 153, 0.6 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    transition: ease-in-out 0.5s;
+}
+
+.product-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-text>p {
+    margin-top: 20px;
+}
+
+.landing-container {
+    /* background-color: ; */
 }

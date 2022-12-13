@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { UseCtx } from '../../contexts/Context'
+import { UseCtx } from '../../../contexts/Context'
 
 function DragDrop() {
     const [dragOver, setDragOver] = useState(false)
@@ -32,13 +32,13 @@ console.log(mp4)
   return (
     <>
     <div className='drag-drop-container'>
-      <h1>Drag File Below</h1>
+      <h1>Drag File Into The Box</h1>
         <div
         onDrop={onDrop1}
         onDragOver={onDragOver}
         >
-          {file1Upload ? <p>{currentVideo.name}</p> : <p>File .mp4</p>}
-          {file1Upload ? <Link to='/edit'><button>Edit for TikTok</button></Link> : <></>}
+          {file1Upload ? <p>{currentVideo.name}</p> : <p>No File Detected</p>}
+          {file1Upload ? <Link to='/fps-template'><button>Edit for TikTok</button></Link> : <></>}
         </div>
     </div>
     </>
