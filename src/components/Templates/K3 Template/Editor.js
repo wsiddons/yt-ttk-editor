@@ -192,26 +192,10 @@ function Test() {
         await ffmpeg.run('-i', 'trim.mp4', '-filter:v', cropCam, '-c:v', 'libx264', '-preset', 'superfast', 'crop1.mp4')
         setProgressText(`cropping cam`)
 
-        //crop clip 2
-        await ffmpeg.run('-i', 'trim.mp4', '-filter:v', cropVideo, '-c:v', 'libx264', '-preset', 'superfast', 'crop2.mp4')
-        setProgressText(`cropping gameplay`)
-
-        //stack the cropped clips
-        await ffmpeg.run('-i', 'crop1.mp4', '-i', 'crop2.mp4', '-filter_complex', 'vstack=inputs=2', '-c:v', 'libx264', '-preset', 'superfast', 'output.mp4')
-        setProgressText(`stacking clips`)
 
 
-        if (e.target[2].files[0]) {
-            const file2 = e.target[2].files[0]
-            const name2 = file2.name
-            ffmpeg.FS('writeFile', name2, await fetchFile(file2))
-            await ffmpeg.run('-i', 'output.mp4', '-i', name2, '-filter_complex', overlay, '-c:v', 'libx264', '-preset', 'superfast', 'output_overlay.mp4')
-            setProgressText(`overlaying image`)
+        var data = ffmpeg.FS('readFile', `output.mp4`)
 
-            var data = ffmpeg.FS('readFile', `output_overlay.mp4`)
-        } else {
-            var data = ffmpeg.FS('readFile', `output.mp4`)
-        }
         
         setProgressText('')
         setTestRatio('')

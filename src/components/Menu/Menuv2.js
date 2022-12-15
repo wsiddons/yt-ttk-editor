@@ -1,12 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import { Link } from 'react-router-dom'
 import { UseCtx } from '../../contexts/Context'
 import ItemTemplate from './ItemTemplate'
 
 function Menuv2() {
-
-    
-
   return (
     <div className='menu-page-container'>
         <h1>DRAG FILE OVER TEMPLATE TO BEGIN</h1>
@@ -52,7 +49,13 @@ function Menuv2() {
                 'position top crop and bottom crop'
             ]}
             />
-            
+            <ItemTemplate 
+            itemName={'DEVZONE'}
+            img={'horizontal_split_template.png'}
+            link={'/dirtyburger'}
+            desc={[
+                'doink n amish'
+            ]} />
             
         </div>
     </div>

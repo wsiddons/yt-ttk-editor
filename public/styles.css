@@ -387,5 +387,51 @@
 }
 
 .landing-container {
-    /* background-color: ; */
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    background-color: #1A1A1A;   
+}
+
+.landing-text {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    justify-content: center;
+    padding: 3%;
+}
+
+.landing-text h1 {
+    font-size: 8em;
+    max-width: 45%;
+    color: #F2507B;
+}
+
+.landing-text p {
+    font-size: 1.6em;
+    color: #8762D9;
+}
+
+.landing-text button {
+    width: 20vw;
+    margin-top: 5vh;
+    height: 8vh;
+    border-radius: 2vh;
+    background-color: #1A1A1A;
+    border: 5px solid #F2507B;
+    color: #F2507B;
+    font-size: 1.3em;
+    cursor: pointer;
+}
+
+.landing-img {
+    display: flex;
+    align-items: center;
+    width: 50%;
+    margin-left: min(10%, 20%);
+}
+
+.landing-img img {
+    max-height: 50%;
+    margin: 0 1vw;
 }

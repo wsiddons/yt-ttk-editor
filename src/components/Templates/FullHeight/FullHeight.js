@@ -165,7 +165,6 @@ function FullHeight() {
         await ffmpeg.run('-i', 'trim.mp4', '-filter:v', cropVideo, '-c:v', 'libx264', '-preset', 'superfast', 'output.mp4')
         setProgressText(`cropping gameplay`)
 
-
         var data = ffmpeg.FS('readFile', `output.mp4`)
         
         setProgressText('')

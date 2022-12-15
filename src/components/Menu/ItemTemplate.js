@@ -8,8 +8,6 @@ function ItemTemplate(props) {
     const [mp4, setMp4] = useState(null)
     const {currentVideo, setCurrentVideo} = UseCtx()
 
-    console.log(props.desc)
-
     const onDragOver = (e) => {
         e.preventDefault();
         setDragOver(true);
@@ -36,8 +34,8 @@ function ItemTemplate(props) {
                     <h3>{props.itemName}</h3>
                     <div>
                         <ul>
-                            {props.desc.map((ele) => 
-                            <li>{ele}</li>
+                            {props.desc.map((ele, id) => 
+                            <li key={id}>{ele}</li>
                             )}
                         </ul>
                     </div>
