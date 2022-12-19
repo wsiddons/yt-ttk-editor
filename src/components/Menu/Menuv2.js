@@ -9,7 +9,7 @@ function Menuv2() {
         <h1>DRAG FILE OVER TEMPLATE TO BEGIN</h1>
         <div className='menu-container'>
             <ItemTemplate 
-            itemName={'FPS'}
+            itemName={'FPS + Cam'}
             img={'FPS_template.png'}
             link={'/fps-template'}
             desc={[
@@ -18,7 +18,7 @@ function Menuv2() {
                 'position facecam and gameplay crop zone'
             ]}
             />
-            <ItemTemplate 
+            {/* <ItemTemplate 
             itemName={'Full Width + Cam'}
             img={'full_width_with_cam.png'}
             link={'/full-width-cam-template'}
@@ -28,7 +28,7 @@ function Menuv2() {
                 'position top video crop and gameplay crop',
                 'add background and clip-splitter overlay (optional)'
             ]}
-            />
+            /> */}
              <ItemTemplate 
             itemName={'Full Height Gameplay'}
             img={'full_height_gameplay.png'}
@@ -39,7 +39,7 @@ function Menuv2() {
                 'position gameplay crop'
             ]}
             />
-            <ItemTemplate 
+            {/* <ItemTemplate 
             itemName={'50 50 Split'}
             img={'horizontal_split_template.png'}
             link={'/50-50-template'}
@@ -55,7 +55,7 @@ function Menuv2() {
             link={'/dirtyburger'}
             desc={[
                 'doink n amish'
-            ]} />
+            ]} /> */}
             
         </div>
     </div>
