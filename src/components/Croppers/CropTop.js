@@ -1,12 +1,18 @@
 import React, {useState, useRef, useEffect} from 'react'
+import { UseCtx } from '../../contexts/Context'
 
-function Cropper({video, cropWidth, cropHeight, id, aspectRatio}) {
+function CropTop({video, cropWidth, cropHeight, id, aspectRatio, borderColor}) {
     const crop1 = useRef(null)
     const resizer = useRef(null)
 
+    const {topCrop, setTopCrop, topPos, setTopPos} = UseCtx()
+
     useEffect(() => {
-        setPosition({ x: video.current.offsetLeft, y: video.current.offsetTop})
+        setPosition({ x: video.current.offsetLeft + 50, y: video.current.offsetTop + 50})
         setMaxHeight(video.current.getBoundingClientRect().height)
+        setDimensions({width: cropWidth, height: cropWidth * aspectRatio})
+        setTopCrop({width: cropWidth, height: cropWidth * aspectRatio})
+        setTopPos({ x: video.current.offsetLeft + 50, y: video.current.offsetTop + 50})
     }, [])
 
     // Use the useState hook to store the div's position and dimensions in state
@@ -33,10 +39,12 @@ function Cropper({video, cropWidth, cropHeight, id, aspectRatio}) {
 
     const handleResizing = (e) =>{
         let x = initialDim.width + (e.clientX - initialPos.x)
-        // console.log(crop1.current.getBoundingClientRect(), video.current.getBoundingClientRect())
-        let y = x * aspectRatio
+        let y = x * (1/aspectRatio)
         if (resizing) {   
- 
+                setTopCrop({
+                    width: x,
+                    height: y
+                })
                 setDimensions({
                     width: x,
                     height: y
@@ -65,8 +73,14 @@ function Cropper({video, cropWidth, cropHeight, id, aspectRatio}) {
     // Define a function that handles the div's drag events
     const handleMouseMove = (e) => {
       if (mouseDown) {
+        const boundingX = Math.abs(Math.floor(crop1.current.getBoundingClientRect().left - video.current.getBoundingClientRect().left))
+        const boundingY = Math.abs(Math.floor(crop1.current.getBoundingClientRect().top - video.current.getBoundingClientRect().top))
+        setTopPos({
+            x: boundingX,
+            y: boundingY, 
+        })
         //if mouse is on left edge
-
+        
 
         //if crop hits left bounds
           if ((e.clientX - (crop1.current.offsetWidth / 2)) < video.current.offsetLeft) {
@@ -99,7 +113,7 @@ function Cropper({video, cropWidth, cropHeight, id, aspectRatio}) {
           // Update the div's position in state using the new coordinates from the event
           else 
           {
-              setPosition({
+            setPosition({
                   x: e.clientX - (crop1.current.offsetWidth / 2),
                   y: e.clientY - (crop1.current.offsetHeight / 2),
               })
@@ -114,14 +128,14 @@ function Cropper({video, cropWidth, cropHeight, id, aspectRatio}) {
         width: `${dimensions.width}px`,
         // height: `${dimensions.height}px`,
         aspectRatio: aspectRatio,
-        border: '2px solid red',
+        border: `4px solid ${borderColor}`,
         maxHeight: maxHeight,
         maxWidth: (maxHeight * (aspectRatio/1))
       }
 
     const resizerStyle = {
         position: 'absolute',
-        backgroundColor: 'red',
+        backgroundColor: borderColor,
         width: '30px',
         height: '30px',
         bottom: '0',
@@ -149,4 +163,4 @@ function Cropper({video, cropWidth, cropHeight, id, aspectRatio}) {
   )
 }
 
-export default Cropper
+export default CropTop
