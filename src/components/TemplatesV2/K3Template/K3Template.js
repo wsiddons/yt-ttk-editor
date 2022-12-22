@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import CropBot from '../../Croppers/CropBot'
 import CropTop from '../../Croppers/CropTop'
 import Nav from '../../Navbar/Nav'
-import Cropper from '../../RANDDY/Cropper'
 import PreviewCanvas from './PreviewCanvas'
 import { UseCtx } from '../../../contexts/Context'
 import Trim from '../../Trim/Trim'
@@ -10,6 +9,8 @@ import { useNavigate } from 'react-router-dom'
 import { k3Templify } from '../../../hooks/K3Templify'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
 import OutputModal from './OutputModal'
+import { useFfmpeg } from "../../../hooks/useFfmpeg";
+
 
 function K3Template() {
   const video = useRef(null)
@@ -23,6 +24,8 @@ function K3Template() {
 
   const [topCropWidth, setTopCropWidth] = useState(window.innerWidth / 4)
   const [botCropWidth, setBotCropWidth] = useState(window.innerWidth / 7)
+
+  const { k3Templify } = useFfmpeg()
 
 
   const { 
@@ -48,12 +51,27 @@ function K3Template() {
     setBotCropWidth(window.innerWidth / 7)
   }, [])
 
-  const makeClip = () => {
-    k3Templify(
-      video, currentVideo, 
-      overlay, topCrop, botCrop, topPos, botPos, startTime, endTime, 
-      createFFmpeg, fetchFile, 
-      setOutputVideo)
+  // const makeClip = () => {
+  //   k3Templify(
+  //     video, currentVideo, 
+  //     overlay, topCrop, botCrop, topPos, botPos, startTime, endTime, 
+  //     createFFmpeg, fetchFile, 
+  //     setOutputVideo)
+  //   setTorf(true)
+  // }
+
+  const makeClip = async () => {
+    await k3Templify(
+      video,
+      currentVideo,
+      overlay,
+      topCrop,
+      botCrop,
+      topPos,
+      botPos,
+      startTime,
+      endTime
+    )
     setTorf(true)
   }
 
@@ -126,7 +144,7 @@ function K3Template() {
             </div>
           </div>
           <div className='right-buttons'>
-            <h3 onClick={makeClip}>Create Video</h3>
+            <h3 onClick={async () => await makeClip()}>Create Video</h3>
             {/* <h3 onClick={() => setTorf(!torf)}>toggle modal</h3> */}
           </div>
         </div>
